@@ -1,0 +1,27 @@
+FROM ubuntu:22.04
+
+RUN apt update && \
+    apt upgrade -y && \
+    apt install -y minidlna curl
+
+ENV PATH=/sbin:/usr/sbin:/bin:/usr/bin
+ENV DESC="DLNA/UPnP-AV media server"
+ENV NAME=minidlna
+ENV DAEMON=/usr/sbin/minidlnad
+ENV PIDFILE=/run/$NAME/$NAME.pid
+ENV SCRIPTNAME=/etc/init.d/$NAME
+
+ENV CONFIGFILE=/etc/minidlna.conf
+ENV LOGFILE=/var/log/$NAME/minidlna.log
+ENV USER=minidlna
+ENV GROUP=minidlna
+ENV DAEMON_OPTS="-r"
+ENV DAEMON_ARGS="-f $CONFIGFILE -P $PIDFILE $DAEMON_OPTS"
+
+EXPOSE 8200/tcp
+
+USER 1000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD curl -f http://localhost:8200
+
+CMD [ "/usr/sbin/minidlnad", "-f", "/etc/minidlna.conf", "-P", "/run/minidlna/minidlna.pid", "-r", "-S" ]
