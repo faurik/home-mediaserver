@@ -116,4 +116,4 @@ services:
     volumes:
       - "/srv:/srv:ro"
       - "./fb2index:/opt/fb2index"
-    command: ["-db", "/opt/fb2index/db.sqlite", "-http", "0.0.0.0:8000", "-j", "16", "-r", "/srv/downloads/fb2.Flibusta.Net"]
+    command: ["-db", "/opt/fb2index/db.sqlite", "-http", "0.0.0.0:8000", "-j", "16", "-l", "ru", "-r", "/srv/downloads/fb2.Flibusta.Net"]
