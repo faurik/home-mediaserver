@@ -29,23 +29,6 @@ services:
       - "./minidlna/logs:/var/log/minidlna"
     restart: always
 
-  freelib:
-    build:
-      context: .
-      dockerfile: Dockerfile-freelib
-    image: "home/freelib:latest"
-    ports:
-      - "8080:8080"
-    environment:
-      FREELIB_INPX_FILE: "/srv/downloads/fb2.Flibusta.Net/flibusta_fb2_local.inpx"
-      FREELIB_LIBRARY_DIR: "/srv/downloads/fb2.Flibusta.Net"
-      FREELIB_DATABASE_PATH: "/opt/database/db.sqlite3"
-    restart: always
-    privileged: true
-    volumes:
-      - "/srv:/srv"
-      - "./freelib/database:/opt/database"
-
   victoria:
     image: "victoriametrics/victoria-metrics:v1.85.3"
     volumes:
@@ -83,8 +66,17 @@ services:
     network_mode: "host"
     restart: always
 
+  postgresql:
+    image: "postgres:15.2"
+    environment:
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - "./postgres/data:/var/lib/postgresql/data"
+      - "./postgres/init.sh:/docker-entrypoint-initdb.d/init.sh"
+    restart: always
+
   grafana:
-    image: "grafana/grafana-oss:9.3.2-ubuntu"
+    image: "grafana/grafana-oss:9.4.7-ubuntu"
     volumes:
       - "./grafana/data:/var/lib/grafana"
       - "./grafana/grafana.ini:/etc/grafana/grafana.ini:ro"
@@ -113,3 +105,15 @@ services:
     ports:
       - "80:80"
     restart: always
+
+  fb2index:
+    build:
+      dockerfile: Dockerfile-fb2index
+      context: .
+    image: "home/fb2index:latest"
+    ports:
+      - "8000:8000"
+    volumes:
+      - "/srv:/srv:ro"
+      - "./fb2index:/opt/fb2index"
+    command: ["-db", "/opt/fb2index/db.sqlite", "-http", "0.0.0.0:8000", "-j", "16", "-r", "/srv/downloads/fb2.Flibusta.Net"]

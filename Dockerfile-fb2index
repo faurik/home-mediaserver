@@ -1,0 +1,9 @@
+FROM golang:1.20.2-buster as builder
+
+RUN go install gitlab.com/opennota/fb2index@latest
+
+FROM ubuntu:22.04
+
+COPY --from=builder /go/bin/fb2index /usr/local/bin/
+
+ENTRYPOINT ["/usr/local/bin/fb2index"]
