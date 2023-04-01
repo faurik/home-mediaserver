@@ -1,0 +1,20 @@
+FROM ubuntu:22.04
+
+COPY freelib/entrypoint.sh /entrypoint.sh
+
+RUN apt update && \
+    apt upgrade -y && \
+    apt install -y curl git cmake build-essential qtbase5-dev libqt5sql5-sqlite libquazip5-dev sqlite
+
+RUN git clone --recurse-submodules https://github.com/petrovvlad/freeLib.git && \
+    cd freeLib && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt .. && cmake --build . -j2 && \
+    make install && \
+    chmod a+x /entrypoint.sh
+
+EXPOSE 8080/tcp
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD curl -f http://localhost:8080
+
+ENTRYPOINT [ "/entrypoint.sh" ]
