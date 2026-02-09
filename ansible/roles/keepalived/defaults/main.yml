@@ -1,0 +1,4 @@
+keepalived_priority: 200
+keepalived_virtual_router_id: 1
+keepalived_auth_pass: 123456
+keepalived_ip: 1.2.3.4/24

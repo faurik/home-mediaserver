@@ -1,0 +1,21 @@
+! Ansible managed
+
+global_defs {
+   router_id LVS_DEVEL
+   vrrp_skip_check_adv_addr
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface {{ ansible_facts.default_ipv4.interface }}
+    virtual_router_id {{ keepalived_virtual_router_id }}
+    priority {{ keepalived_priority }}
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass {{ keepalived_auth_pass }}
+    }
+    virtual_ipaddress {
+        {{ keepalived_ip }}
+    }
+}

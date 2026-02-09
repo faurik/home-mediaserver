@@ -1,0 +1,26 @@
+- name: Enable packets forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: true
+
+- name: Enable packets from LAN
+  ansible.builtin.iptables:
+    chain: INPUT
+    jump: ACCEPT
+    in_interface: enp4s0
+
+- name: Allow forwarding from LAN to LAN
+  ansible.builtin.iptables:
+    chain: FORWARD
+    in_interface: enp4s0
+    out_interface: enp4s0
+    jump: ACCEPT
+
+- name: Enable masquerading
+  ansible.builtin.iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: enp4s0
+    jump: MASQUERADE
