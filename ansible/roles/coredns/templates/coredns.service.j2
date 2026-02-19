@@ -1,0 +1,11 @@
+[Unit]
+Description=CoreDNS
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/coredns/coredns -conf /opt/coredns/Corefile
+
+[Install]
+WantedBy=multi-user.target

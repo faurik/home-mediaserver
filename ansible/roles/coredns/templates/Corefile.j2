@@ -1,0 +1,7 @@
+.:53 {
+    bind {{ coredns_bind_ip }}
+{% for item in coredns_forward_mapping %}
+    forward {{ item.from }} {{ item.to }}
+{% endfor %}
+    log
+}

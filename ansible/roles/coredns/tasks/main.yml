@@ -1,0 +1,35 @@
+- name: Ensure coredns directory
+  ansible.builtin.file:
+    path: /opt/coredns
+    state: directory
+    mode: '0755'
+
+- name: Download CoreDNS
+  ansible.builtin.get_url:
+    url: "https://github.com/coredns/coredns/releases/download/v{{ coredns_version }}/coredns_{{ coredns_version }}_linux_amd64.tgz"
+    dest: /opt/coredns/
+  notify: Remove CoreDNS installer
+
+- name: Unarchive CoreDNS
+  ansible.builtin.unarchive:
+    src: "/opt/coredns/coredns_{{ coredns_version }}_linux_amd64.tgz"
+    dest: /opt/coredns/
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Restart CoreDNS
+
+- name: Configure CoreDNS
+  ansible.builtin.template:
+    src: Corefile.j2
+    dest: /opt/coredns/Corefile
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart CoreDNS
+
+- name: Create systemd service
+  ansible.builtin.template:
+    src: coredns.service.j2
+    dest: /etc/systemd/system/coredns.service
+  notify: Restart CoreDNS

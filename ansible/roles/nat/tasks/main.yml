@@ -5,22 +5,34 @@
     state: present
     reload: true
 
-- name: Enable packets from LAN
+- name: Enable LAN packets bi-directional
   ansible.builtin.iptables:
-    chain: INPUT
+    chain: FORWARD
     jump: ACCEPT
     in_interface: enp4s0
+    out_interface: enp4s0
 
-- name: Allow forwarding from LAN to LAN
+- name: Allow forwarding from LAN to tunnel
   ansible.builtin.iptables:
     chain: FORWARD
     in_interface: enp4s0
+    out_interface: tun
+    jump: ACCEPT
+
+- name: Allow established connections from tunnel to LAN
+  ansible.builtin.iptables:
+    chain: FORWARD
+    in_interface: tun
     out_interface: enp4s0
     jump: ACCEPT
+    ctstate: ESTABLISHED,RELATED
 
 - name: Enable masquerading
   ansible.builtin.iptables:
     table: nat
     chain: POSTROUTING
-    out_interface: enp4s0
+    out_interface: "{{ item }}"
     jump: MASQUERADE
+  loop:
+    - enp4s0
+    - tun

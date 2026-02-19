@@ -1,0 +1,5 @@
+coredns_version: 1.14.1
+coredns_bind_ip: 1.2.3.4
+coredns_forward_mapping:
+  - from: "."
+    to: "1.1.1.1"
