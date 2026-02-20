@@ -1,0 +1,38 @@
+- name: Add deb-src repo
+  ansible.builtin.copy:
+    src: ubuntu-src.sources
+    dest: /etc/apt/sources.list.d/ubuntu-src.sources
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install pre-requisites
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  loop:
+    - software-properties-common
+    - python3-launchpadlib
+    - gnupg2 
+    - "linux-headers-{{ ansible_facts.kernel }}"
+
+- name: Add repository
+  ansible.builtin.apt_repository:
+    repo: ppa:amnezia/ppa
+
+- name: Install awg
+  ansible.builtin.apt:
+    name: amneziawg
+    state: latest
+    update_cache: yes
+
+- name: Message
+  ansible.builtin.debug:
+    msg: "Please add tun.conf file into /etc/amnezia/amneziawg"
+
+- name: Create systemd service
+  ansible.builtin.template:
+    src: coredns.service.j2
+    dest: /etc/systemd/system/coredns.service
+  notify: Restart CoreDNS
