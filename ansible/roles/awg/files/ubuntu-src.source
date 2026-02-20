@@ -1,5 +1,0 @@
-Types: deb-src
-URIs: http://ru.archive.ubuntu.com/ubuntu/
-Suites: noble noble-updates noble-backports noble-proposed
-Components: main restricted universe multiverse
-Signed-By: /usr/share/keyrings/ubuntu- 'none'; base-uri 'self'; connect-src 

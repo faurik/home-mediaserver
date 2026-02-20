@@ -3,6 +3,7 @@
 {% for item in coredns_forward_mapping %}
     forward {{ item.from }} {{ item.to }}
 {% endfor %}
+    cache 600
     log
     prometheus 0.0.0.0:9153
 }

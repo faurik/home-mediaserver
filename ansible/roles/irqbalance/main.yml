@@ -1,0 +1,15 @@
+---
+- name: Install irqbalance
+  ansible.builtin.apt:
+    name: irqbalance
+    state: latest
+  notify: Restart irqbalance
+
+- name: Configure keepalived
+  ansible.builtin.template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart keepalived

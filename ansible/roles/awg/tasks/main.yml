@@ -1,7 +1,7 @@
 - name: Add deb-src repo
   ansible.builtin.copy:
-    src: ubuntu-src.sources
-    dest: /etc/apt/sources.list.d/ubuntu-src.sources
+    src: ubuntu.sources
+    dest: /etc/apt/sources.list.d/ubuntu.sources
     owner: root
     group: root
     mode: '0644'
@@ -16,6 +16,7 @@
     - python3-launchpadlib
     - gnupg2 
     - "linux-headers-{{ ansible_facts.kernel }}"
+  notify: Restart awg-quick
 
 - name: Add repository
   ansible.builtin.apt_repository:
@@ -26,13 +27,41 @@
     name: amneziawg
     state: latest
     update_cache: yes
+  notify: Restart awg-quick
 
 - name: Message
   ansible.builtin.debug:
     msg: "Please add tun.conf file into /etc/amnezia/amneziawg"
 
+- name: Copy networks file
+  ansible.builtin.copy:
+    src: networks
+    dest: /etc/amnezia/networks
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart awg-quick
+
+- name: Copy prepare script
+  ansible.builtin.copy:
+    src: prepare_tun.sh
+    dest: /etc/amnezia/prepare_tun.sh
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Restart awg-quick
+
+- name: Copy apply routes script
+  ansible.builtin.copy:
+    src: apply_routes.sh
+    dest: /etc/amnezia/apply_routes.sh
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Restart awg-quick
+
 - name: Create systemd service
-  ansible.builtin.template:
-    src: coredns.service.j2
-    dest: /etc/systemd/system/coredns.service
-  notify: Restart CoreDNS
+  ansible.builtin.copy:
+    src: awg-quick@.service
+    dest: /etc/systemd/system/awg-quick@.service
+  notify: Restart awg-quick
